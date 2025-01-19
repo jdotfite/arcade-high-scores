@@ -6,57 +6,35 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
-        /* Background and scanline effects */
-body {
-    background: linear-gradient(180deg, 
-        #000014 0%,
-        #000033 50%,
-        #000014 100%);
-    color: #fff;
-    font-family: 'Press Start 2P', monospace;
-    padding: 20px;
-    line-height: 1.6;
-    position: relative;
-    min-height: 100vh;
-    margin: 0;
-    overflow-x: hidden;
-}
+        body {
+            background: #000051;  /* Matched to the deep blue in screenshot */
+            color: #fff;
+            font-family: 'Press Start 2P', monospace;
+            padding: 20px;
+            line-height: 2.5;  /* Increased for more arcade-like spacing */
+            position: relative;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-/* Chunkier scanlines */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 0, 0, 0.2) 0px,
-        rgba(0, 0, 0, 0.2) 4px,
-        transparent 4px,
-        transparent 8px
-    );
-    pointer-events: none;
-    z-index: 1;
-}
-
-        /* Stars effect */
-        body::after {
+        /* Thicker scanlines */
+        body::before {
             content: "";
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: 
-                radial-gradient(white 1px, transparent 1px),
-                radial-gradient(white 1px, transparent 1px);
-            background-size: 50px 50px;
-            background-position: 0 0, 25px 25px;
-            opacity: 0.1;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.3) 0px,
+                rgba(0, 0, 0, 0.3) 6px,
+                transparent 6px,
+                transparent 12px
+            );
             pointer-events: none;
-            z-index: 0;
+            z-index: 1;
         }
         
         .container {
@@ -64,76 +42,74 @@ body::before {
             margin: 0 auto;
             position: relative;
             z-index: 2;
+            padding-top: 40px;  /* Added top padding */
         }
         
         h1 {
-            color: #DAA520;
+            color: #FFA500;  /* More orange-gold like the screenshot */
             text-align: center;
             font-size: 24px;
-            margin-bottom: 40px;
-            text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+            margin-bottom: 60px;  /* Increased spacing */
+            letter-spacing: 2px;
         }
         
         .game-title {
             color: #FFFF00;
-            font-size: 18px;
+            font-size: 20px;
             text-align: center;
-            margin: 40px 0 20px;
-            text-shadow: 0 0 8px rgba(255, 255, 0, 0.5);
+            margin: 60px 0 30px;  /* Increased spacing */
+            letter-spacing: 1px;
         }
         
         .score-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 8px;
-            margin: 20px 0;
+            border-spacing: 0 12px;  /* Increased row spacing */
+            margin: 30px 0;
         }
         
-        /* Center all table content */
         .score-table th,
         .score-table td {
             text-align: center;
-            vertical-align: middle;
             width: 33.33%;
-            padding: 10px 0;
+            padding: 8px 0;
         }
         
         .header-row th {
-            color: #FF00FF;
-            font-size: 16px;
-            text-shadow: 0 0 8px rgba(255, 0, 255, 0.5);
+            color: #FF00FF;  /* Brighter magenta */
+            font-size: 18px;
+            margin-bottom: 20px;
         }
         
         .rank-1st {
-            color: #FF0000;
-            text-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+            color: #FF0000;  /* Pure red */
+            font-size: 16px;
         }
         
         .rank-2nd {
-            color: #FFA500;
-            text-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
+            color: #FFA500;  /* Pure orange */
+            font-size: 16px;
         }
         
         .score-value {
-            color: #FFFF00;
-            text-shadow: 0 0 8px rgba(255, 255, 0, 0.5);
+            color: #FFFF00;  /* Bright yellow */
+            font-size: 16px;
         }
         
         .empty-score {
-            color: #666;
+            color: #888;
+            font-size: 16px;
         }
         
         .last-updated {
             text-align: center;
-            color: #666;
-            font-size: 12px;
-            margin-top: 40px;
+            color: #888;
+            font-size: 14px;
+            margin-top: 80px;  /* Increased spacing */
+            letter-spacing: 1px;
         }
 
-        /* Table hover effect */
-        .score-row:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
+        /* Removed hover effects and shadows for more authentic look */
     </style>
 </head>
 <body>
