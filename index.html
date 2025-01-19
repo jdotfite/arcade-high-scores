@@ -185,64 +185,71 @@
             if (countdownValue < 0) countdownValue = 5;
         }
 
-        async function loadScores() {
-            try {
-                // Reset countdown
-                countdownValue = 5;
-                updateCountdown();
-                
-                const timestamp = new Date().getTime();
-                const response = await fetch(`https://api.github.com/gists/07657b12f3715a7d4c183ce864d9e746?nocache=${timestamp}`);
-                
-                const gist = await response.json();
-                const data = JSON.parse(gist.files['scores.json'].content);
-                
-                const scoresDiv = document.getElementById('scores');
-                
-                const gameNames = {
-                    'mspacman': 'MS. PAC-MAN',
-                    'mspacmnf': 'MS. PAC-MAN FAST',
-                    'pacman': 'PAC-MAN'
-                };
-                
-                let html = '';
-                
-                for (const [game, scoreData] of Object.entries(data.arcade_scores)) {
-                    const displayName = gameNames[game] || game.toUpperCase();
-                    const justinScore = scoreData.high_scores[0].score;
-                    
-                    html += `
-                        <div class="game-section">
-                            <div class="game-title">${displayName}</div>
-                            <table class="score-table">
-                                <tr class="header-row">
-                                    <th>RANK</th>
-                                    <th>SCORE</th>
-                                    <th>NAME</th>
-                                </tr>
-                                <tr class="score-row">
-                                    <td class="rank-1st">1ST</td>
-                                    <td class="score-value">${justinScore}</td>
-                                    <td class="rank-1st">JUSTIN</td>
-                                </tr>
-                                <tr class="score-row">
-                                    <td class="rank-2nd">2ND</td>
-                                    <td class="empty-score">---</td>
-                                    <td class="rank-2nd">THOM</td>
-                                </tr>
-                            </table>
-                        </div>
-                    `;
-                }
-                
-                html += `<div class="last-updated">Last Updated: ${data.last_updated}</div>`;
-                scoresDiv.innerHTML = html;
-
-            } catch (error) {
-                console.error('Error loading scores:', error);
-                document.getElementById('scores').innerHTML = 'Error loading scores. Please try again later.';
-            }
+async function loadScores() {
+    try {
+        // Reset countdown
+        countdownValue = 5;
+        updateCountdown();
+        
+        // Use raw gist URL instead of API
+        const timestamp = new Date().getTime();
+        const response = await fetch(`https://gist.githubusercontent.com/jdotfite/07657b12f3715a7d4c183ce864d9e746/raw/scores.json?nocache=${timestamp}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        
+        const scoresDiv = document.getElementById('scores');
+        
+        const gameNames = {
+            'mspacman': 'MS. PAC-MAN',
+            'mspacmnf': 'MS. PAC-MAN FAST',
+            'pacman': 'PAC-MAN'
+        };
+        
+        let html = '';
+        
+        for (const [game, scoreData] of Object.entries(data.arcade_scores)) {
+            const displayName = gameNames[game] || game.toUpperCase();
+            const justinScore = scoreData.high_scores[0].score;
+            
+            html += `
+                <div class="game-section">
+                    <div class="game-title">${displayName}</div>
+                    <table class="score-table">
+                        <tr class="header-row">
+                            <th>RANK</th>
+                            <th>SCORE</th>
+                            <th>NAME</th>
+                        </tr>
+                        <tr class="score-row">
+                            <td class="rank-1st">1ST</td>
+                            <td class="score-value">${justinScore}</td>
+                            <td class="rank-1st">JUSTIN</td>
+                        </tr>
+                        <tr class="score-row">
+                            <td class="rank-2nd">2ND</td>
+                            <td class="empty-score">---</td>
+                            <td class="rank-2nd">THOM</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+        }
+        
+        html += `<div class="last-updated">Last Updated: ${data.last_updated}</div>`;
+        scoresDiv.innerHTML = html;
+
+    } catch (error) {
+        console.error('Error loading scores:', error);
+        // Keep showing old scores if there's an error
+        if (!document.getElementById('scores').innerHTML.includes('table')) {
+            document.getElementById('scores').innerHTML = 'Error loading scores. Retrying...';
+        }
+    }
+}
 
         loadScores();
         setInterval(loadScores, 5000);
