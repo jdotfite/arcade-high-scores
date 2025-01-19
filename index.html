@@ -137,7 +137,7 @@
 
         .countdown-circle .progress {
             stroke: #00FF00;
-            animation: countdown 5s linear infinite;
+            animation: countdown 60s linear infinite;  // Change to 60s
         }
 
         .countdown-circle .bg {
@@ -179,16 +179,17 @@
     <script>
         let countdownValue = 5;
 
-        function updateCountdown() {
-            document.querySelector('.countdown-text').textContent = countdownValue;
-            countdownValue--;
-            if (countdownValue < 0) countdownValue = 5;
-        }
+// Function definition goes here, outside loadScores
+function updateCountdown() {
+    document.querySelector('.countdown-text').textContent = countdownValue;
+    countdownValue--;
+    if (countdownValue < 0) countdownValue = 60;
+}
 
 async function loadScores() {
     try {
         // Reset countdown
-        countdownValue = 5;
+        countdownValue = 60;
         updateCountdown();
         
         // Use raw gist URL instead of API
@@ -252,7 +253,7 @@ async function loadScores() {
 }
 
         loadScores();
-        setInterval(loadScores, 5000);
+        setInterval(loadScores, 60000);
         setInterval(updateCountdown, 1000);
     </script>
 </body>
