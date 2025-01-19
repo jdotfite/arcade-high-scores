@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Arcade Battle Board</title>
+    <title>Arcade Hall of Fame</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
@@ -20,86 +20,70 @@
         }
         
         h1 {
-            color: #FFD700;
+            color: #DAA520;  /* Hall of Fame gold color */
             text-align: center;
             font-size: 24px;
-            margin-bottom: 40px;
-            text-shadow: 2px 2px #FF4500;
-        }
-        
-        .game-section {
             margin-bottom: 40px;
         }
         
         .game-title {
-            color: #FFA500;
-            font-size: 20px;
+            color: #FFFF00;  /* Yellow for game titles */
+            font-size: 18px;
             text-align: center;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
+            margin: 40px 0 20px;
         }
         
         .score-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 4px;
+            border-spacing: 0 8px;
+            margin: 20px 0;
         }
         
-        .score-table th {
-            color: #FF00FF;
+        .header-row th {
+            color: #FF00FF;  /* Magenta for headers */
             padding: 10px;
-            text-align: center;
+            text-align: left;
+            font-size: 16px;
         }
         
-        .score-table td {
-            padding: 10px;
-            text-align: center;
+        .score-row td {
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
         }
         
         .rank-1st {
-            color: #FF0000;
+            color: #FF0000;  /* Red for 1st */
         }
         
         .rank-2nd {
-            color: #FFA500;
+            color: #FFA500;  /* Orange for 2nd */
         }
         
         .score-value {
-            color: #FFFF00;
+            color: #FFFF00;  /* Yellow for scores */
         }
         
         .player-name {
-            color: #00FF00;
+            color: inherit;  /* Inherit the rank color */
+        }
+        
+        .empty-score {
+            color: #666;  /* Dimmed color for empty scores */
         }
         
         .last-updated {
             text-align: center;
-            color: #888;
+            color: #666;
             font-size: 12px;
             margin-top: 40px;
-        }
-        
-        /* CRT effect */
-        .container {
-            animation: textShadow 1.6s infinite;
-        }
-        
-        @keyframes textShadow {
-            0% {
-                text-shadow: 0.4389924193300864px 0 1px rgba(0,30,255,0.5), -0.4389924193300864px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            5% {
-                text-shadow: 2.7928974010788217px 0 1px rgba(0,30,255,0.5), -2.7928974010788217px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
-            100% {
-                text-shadow: 0.4389924193300864px 0 1px rgba(0,30,255,0.5), -0.4389924193300864px 0 1px rgba(255,0,80,0.3), 0 0 3px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>ARCADE BATTLE BOARD</h1>
+        <h1>ARCADE HALL OF FAME</h1>
         <div id="scores">Loading scores...</div>
     </div>
 
@@ -122,29 +106,27 @@
                 
                 for (const [game, scoreData] of Object.entries(data.arcade_scores)) {
                     const displayName = gameNames[game] || game.toUpperCase();
+                    const justinScore = scoreData.high_scores[0].score;
+                    
                     html += `
                         <div class="game-section">
                             <div class="game-title">${displayName}</div>
                             <table class="score-table">
-                                <thead>
-                                    <tr>
-                                        <th>RANK</th>
-                                        <th>SCORE</th>
-                                        <th>NAME</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="rank-1st">1ST</td>
-                                        <td class="score-value">1960</td>
-                                        <td class="player-name">JUSTIN</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="rank-2nd">2ND</td>
-                                        <td class="score-value">1840</td>
-                                        <td class="player-name">THOM</td>
-                                    </tr>
-                                </tbody>
+                                <tr class="header-row">
+                                    <th>RANK</th>
+                                    <th>SCORE</th>
+                                    <th>NAME</th>
+                                </tr>
+                                <tr class="score-row">
+                                    <td class="rank-1st">1ST</td>
+                                    <td class="score-value">${justinScore}</td>
+                                    <td class="rank-1st">JUSTIN</td>
+                                </tr>
+                                <tr class="score-row">
+                                    <td class="rank-2nd">2ND</td>
+                                    <td class="empty-score">---</td>
+                                    <td class="rank-2nd">THOM</td>
+                                </tr>
                             </table>
                         </div>
                     `;
