@@ -7,39 +7,39 @@
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
         /* Background and scanline effects */
-        body {
-            background: linear-gradient(180deg, 
-                #000033 0%,
-                #000066 50%,
-                #000033 100%);
-            color: #fff;
-            font-family: 'Press Start 2P', monospace;
-            padding: 20px;
-            line-height: 1.6;
-            position: relative;
-            min-height: 100vh;
-            margin: 0;
-            overflow-x: hidden;
-        }
+body {
+    background: linear-gradient(180deg, 
+        #000014 0%,
+        #000033 50%,
+        #000014 100%);
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    padding: 20px;
+    line-height: 1.6;
+    position: relative;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+}
 
-        /* Scanlines overlay */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.15) 0px,
-                rgba(0, 0, 0, 0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            pointer-events: none;
-            z-index: 1;
-        }
+/* Chunkier scanlines */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.2) 0px,
+        rgba(0, 0, 0, 0.2) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+    pointer-events: none;
+    z-index: 1;
+}
 
         /* Stars effect */
         body::after {
