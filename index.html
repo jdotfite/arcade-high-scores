@@ -3,15 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <title>MAME High Scores</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Press Start 2P', monospace;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #FFD700; /* Gold color for title */
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px #FF4500;
+        }
+        
+        h2 {
+            color: #FF4500; /* Orange-red for player name */
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .game {
+            margin-bottom: 40px;
+            border: 2px solid #444;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .game-title {
+            color: #FF00FF; /* Magenta for game titles */
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .score-label {
+            color: #00FF00; /* Green for labels */
+            font-size: 12px;
+        }
+        
+        .score-value {
+            color: #FFFF00; /* Yellow for scores */
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .date {
+            color: #00FFFF; /* Cyan for dates */
+            font-size: 12px;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+            margin-top: 40px;
+        }
+        
+        /* CRT screen effect */
+        .container {
+            animation: textShadow 1.6s infinite;
+        }
+        
+        @keyframes textShadow {
+            0% {
+                text-shadow: 0.4389924193300864px 0 1px rgba(0,30,255,0.5), -0.4389924193300864px 0 1px rgba(255,0,80,0.3), 0 0 3px;
+            }
+            5% {
+                text-shadow: 2.7928974010788217px 0 1px rgba(0,30,255,0.5), -2.7928974010788217px 0 1px rgba(255,0,80,0.3), 0 0 3px;
+            }
+            /* Add more keyframes for smoother animation */
+            100% {
+                text-shadow: 0.4389924193300864px 0 1px rgba(0,30,255,0.5), -0.4389924193300864px 0 1px rgba(255,0,80,0.3), 0 0 3px;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white p-8">
-    <div class="max-w-2xl mx-auto">
-        <h1 class="text-4xl font-bold mb-8 text-center text-yellow-400">MAME High Scores</h1>
-        <div id="scores" class="bg-gray-800 rounded-lg shadow-lg p-6"></div>
-        <div class="text-center text-gray-500 text-sm mt-4">
-            Last Updated: <span id="lastUpdate"></span>
-        </div>
+<body>
+    <div class="container">
+        <h1>MAME High Scores</h1>
+        <div id="scores">Loading scores...</div>
     </div>
 
     <script>
@@ -22,14 +102,9 @@
                 const data = JSON.parse(gist.files['scores.json'].content);
                 
                 const scoresDiv = document.getElementById('scores');
-                const lastUpdateSpan = document.getElementById('lastUpdate');
                 
-                let html = `
-                    <h2 class="text-xl font-bold mb-6 text-blue-400">Player: ${data.player}</h2>
-                    <div class="grid gap-6">
-                `;
+                let html = `<h2>Player: ${data.player}</h2>`;
                 
-                // Game name mappings for display
                 const gameNames = {
                     'mspacman': 'Ms. Pac-Man',
                     'mspacmnf': 'Ms. Pac-Man (Fast)',
@@ -40,29 +115,22 @@
                     const score = scoreData.high_scores[0];
                     const displayName = gameNames[game] || game;
                     html += `
-                        <div class="bg-gray-700 p-6 rounded-lg hover:bg-gray-600 transition-colors">
-                            <h3 class="font-bold text-xl mb-2 text-yellow-400">${displayName}</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-gray-400 text-sm">Score</p>
-                                    <p class="text-3xl font-mono">${score.score}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-gray-400 text-sm">Date</p>
-                                    <p class="text-lg">${score.date}</p>
-                                </div>
-                            </div>
+                        <div class="game">
+                            <div class="game-title">${displayName}</div>
+                            <div class="score-label">Score</div>
+                            <div class="score-value">${score.score}</div>
+                            <div class="score-label">Date</div>
+                            <div class="date">${score.date}</div>
                         </div>
                     `;
                 }
                 
-                html += '</div>';
+                html += `<div class="last-updated">Last Updated: ${data.last_updated}</div>`;
                 scoresDiv.innerHTML = html;
-                lastUpdateSpan.textContent = data.last_updated;
 
             } catch (error) {
                 console.error('Error loading scores:', error);
-                document.getElementById('scores').innerHTML = '<p class="text-red-500">Error loading scores. Please try again later.</p>';
+                document.getElementById('scores').innerHTML = 'Error loading scores. Please try again later.';
             }
         }
 
