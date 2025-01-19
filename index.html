@@ -124,15 +124,10 @@
     <script>
 async function loadScores() {
     try {
-        // Add cache-busting query parameter
+        // Add timestamp as query parameter for cache busting
         const timestamp = new Date().getTime();
-        const response = await fetch(`https://api.github.com/gists/07657b12f3715a7d4c183ce864d9e746?timestamp=${timestamp}`, {
-            cache: 'no-store',  // Force fresh request
-            headers: {
-                'Cache-Control': 'no-cache',
-                'Pragma': 'no-cache'
-            }
-        });
+        const response = await fetch(`https://api.github.com/gists/07657b12f3715a7d4c183ce864d9e746?nocache=${timestamp}`);
+        
         const gist = await response.json();
         const data = JSON.parse(gist.files['scores.json'].content);
         
