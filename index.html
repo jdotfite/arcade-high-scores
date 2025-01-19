@@ -6,17 +6,64 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
+        /* Background and scanline effects */
         body {
-            background-color: #000;
+            background: linear-gradient(180deg, 
+                #000033 0%,
+                #000066 50%,
+                #000033 100%);
             color: #fff;
             font-family: 'Press Start 2P', monospace;
             padding: 20px;
             line-height: 1.6;
+            position: relative;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Scanlines overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15) 0px,
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Stars effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(white 1px, transparent 1px),
+                radial-gradient(white 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
         }
         
         .container {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
         
         h1 {
@@ -24,6 +71,7 @@
             text-align: center;
             font-size: 24px;
             margin-bottom: 40px;
+            text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
         }
         
         .game-title {
@@ -31,6 +79,7 @@
             font-size: 18px;
             text-align: center;
             margin: 40px 0 20px;
+            text-shadow: 0 0 8px rgba(255, 255, 0, 0.5);
         }
         
         .score-table {
@@ -38,36 +87,36 @@
             border-collapse: separate;
             border-spacing: 0 8px;
             margin: 20px 0;
-            table-layout: fixed; /* This helps with equal column widths */
+        }
+        
+        /* Center all table content */
+        .score-table th,
+        .score-table td {
+            text-align: center;
+            vertical-align: middle;
+            width: 33.33%;
+            padding: 10px 0;
         }
         
         .header-row th {
             color: #FF00FF;
-            padding: 10px;
-            text-align: center; /* Center header text */
             font-size: 16px;
-        }
-        
-        .score-row td {
-            padding: 8px;
-            text-align: center; /* Center all cell content */
-            font-size: 14px;
+            text-shadow: 0 0 8px rgba(255, 0, 255, 0.5);
         }
         
         .rank-1st {
             color: #FF0000;
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
         }
         
         .rank-2nd {
             color: #FFA500;
+            text-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
         }
         
         .score-value {
             color: #FFFF00;
-        }
-        
-        .player-name {
-            color: inherit;
+            text-shadow: 0 0 8px rgba(255, 255, 0, 0.5);
         }
         
         .empty-score {
@@ -79,6 +128,11 @@
             color: #666;
             font-size: 12px;
             margin-top: 40px;
+        }
+
+        /* Table hover effect */
+        .score-row:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
