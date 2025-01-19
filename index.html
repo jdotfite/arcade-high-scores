@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MAME High Scores</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-4xl font-bold mb-8 text-center text-yellow-400">MAME High Scores</h1>
+        <div id="scores" class="bg-gray-800 rounded-lg shadow-lg p-6"></div>
+        <div class="text-center text-gray-500 text-sm mt-4">
+            Last Updated: <span id="lastUpdate"></span>
+        </div>
+    </div>
+
+    <script>
+        async function loadScores() {
+            try {
+                const response = await fetch('https://api.github.com/gists/07657b12f3715a7d4c183ce864d9e746');
+                const gist = await response.json();
+                const data = JSON.parse(gist.files['scores.json'].content);
+                
+                const scoresDiv = document.getElementById('scores');
+                const lastUpdateSpan = document.getElementById('lastUpdate');
+                
+                let html = `
+                    <h2 class="text-xl font-bold mb-6 text-blue-400">Player: ${data.player}</h2>
+                    <div class="grid gap-6">
+                `;
+                
+                // Game name mappings for display
+                const gameNames = {
+                    'mspacman': 'Ms. Pac-Man',
+                    'mspacmnf': 'Ms. Pac-Man (Fast)',
+                    'pacman': 'Pac-Man'
+                };
+                
+                for (const [game, scoreData] of Object.entries(data.arcade_scores)) {
+                    const score = scoreData.high_scores[0];
+                    const displayName = gameNames[game] || game;
+                    html += `
+                        <div class="bg-gray-700 p-6 rounded-lg hover:bg-gray-600 transition-colors">
+                            <h3 class="font-bold text-xl mb-2 text-yellow-400">${displayName}</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Score</p>
+                                    <p class="text-3xl font-mono">${score.score}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-gray-400 text-sm">Date</p>
+                                    <p class="text-lg">${score.date}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                html += '</div>';
+                scoresDiv.innerHTML = html;
+                lastUpdateSpan.textContent = data.last_updated;
+
+            } catch (error) {
+                console.error('Error loading scores:', error);
+                document.getElementById('scores').innerHTML = '<p class="text-red-500">Error loading scores. Please try again later.</p>';
+            }
+        }
+
+        loadScores();
+        // Refresh every 5 minutes
+        setInterval(loadScores, 300000);
+    </script>
+</body>
+</html>
