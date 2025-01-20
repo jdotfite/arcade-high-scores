@@ -178,23 +178,22 @@
     </div>
 
 <script>
-    let countdownValue = 60;
-    let lastFetchTime = 0;
-    const CACHE_DURATION = 60000; // 60 seconds in milliseconds
+let countdownValue = 60;
 
-    function updateCountdown() {
-        document.querySelector('.countdown-text').textContent = countdownValue;
-        document.querySelector('.countdown-circle .progress').style.strokeDashoffset = 
-            (251.2 * (60 - countdownValue) / 60);
-        countdownValue--;
-        if (countdownValue < 0) {
-            countdownValue = 60;
-            loadScores();
-        }
+function updateCountdown() {
+    document.querySelector('.countdown-text').textContent = countdownValue;
+    document.querySelector('.countdown-circle .progress').style.strokeDashoffset = 
+        (251.2 * (60 - countdownValue) / 60);
+    countdownValue--;
+    if (countdownValue < 0) {
+        countdownValue = 60;
+        loadScores();
     }
+}
 
-    async function loadScores() {
+async function loadScores() {
     try {
+        console.log('Fetching scores...');
         const response = await fetch('https://gist.githubusercontent.com/jdotfite/07657b12f3715a7d4c183ce864d9e746/raw/scores.json?' + Date.now());
         
         if (!response.ok) {
@@ -202,75 +201,60 @@
         }
         
         const data = await response.json();
-        console.log('Fetched new scores:', data); // Add debug logging
-        lastFetchTime = new Date().getTime();
+        console.log('Fetched data:', data);
 
-        // Update the display
         const scoresDiv = document.getElementById('scores');
-        // ... rest of the display logic ...
-    } catch (error) {
-        console.error('Error fetching scores:', error);
-        if (!document.getElementById('scores').innerHTML.includes('table')) {
-            document.getElementById('scores').innerHTML = 'Error loading scores. Retrying...';
+        const gameNames = {
+            'mspacman': 'MS. PAC-MAN',
+            'mspacmnf': 'MS. PAC-MAN FAST',
+            'pacman': 'PAC-MAN'
+        };
+        
+        let html = '';
+        
+        for (const [game, scoreData] of Object.entries(data.arcade_scores)) {
+            const displayName = gameNames[game] || game.toUpperCase();
+            const topScore = scoreData.high_scores[0].score;
+            const playerName = data.player.toUpperCase();
+
+            html += `
+                <div class="game-section">
+                    <div class="game-title">${displayName}</div>
+                    <table class="score-table">
+                        <tr class="header-row">
+                            <th>RANK</th>
+                            <th>SCORE</th>
+                            <th>NAME</th>
+                        </tr>
+                        <tr class="score-row">
+                            <td class="rank-1st">1ST</td>
+                            <td class="score-value">${topScore}</td>
+                            <td class="rank-1st">${playerName}</td>
+                        </tr>
+                        <tr class="score-row">
+                            <td class="rank-2nd">2ND</td>
+                            <td class="empty-score">---</td>
+                            <td class="rank-2nd">---</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
         }
+        
+        html += `<div class="last-updated">Last Updated: ${data.last_updated}</div>`;
+        scoresDiv.innerHTML = html;
+
+    } catch (error) {
+        console.error('Error loading scores:', error);
+        document.getElementById('scores').innerHTML = 'Error loading scores. Retrying...';
     }
 }
 
-            const scoresDiv = document.getElementById('scores');
-            
-            const gameNames = {
-                'mspacman': 'MS. PAC-MAN',
-                'mspacmnf': 'MS. PAC-MAN FAST',
-                'pacman': 'PAC-MAN'
-            };
-            
-            let html = '';
-            
-            for (const [game, scoreData] of Object.entries(data.arcade_scores)) {
-                const displayName = gameNames[game] || game.toUpperCase();
-                const topScore = scoreData.high_scores[0].score;
-                const playerName = data.player.toUpperCase();
+// Initial load
+loadScores();
 
-                html += `
-                    <div class="game-section">
-                        <div class="game-title">${displayName}</div>
-                        <table class="score-table">
-                            <tr class="header-row">
-                                <th>RANK</th>
-                                <th>SCORE</th>
-                                <th>NAME</th>
-                            </tr>
-                            <tr class="score-row">
-                                <td class="rank-1st">1ST</td>
-                                <td class="score-value">${topScore}</td>
-                                <td class="rank-1st">${playerName}</td>
-                            </tr>
-                            <tr class="score-row">
-                                <td class="rank-2nd">2ND</td>
-                                <td class="empty-score">---</td>
-                                <td class="rank-2nd">---</td>
-                            </tr>
-                        </table>
-                    </div>
-                `;
-            }
-            
-            html += `<div class="last-updated">Last Updated: ${data.last_updated}</div>`;
-            scoresDiv.innerHTML = html;
-
-        } catch (error) {
-            console.error('Error loading scores:', error);
-            if (!document.getElementById('scores').innerHTML.includes('table')) {
-                document.getElementById('scores').innerHTML = 'Error loading scores. Retrying...';
-            }
-        }
-    }
-
-    // Initial load
-    loadScores();
-
-    // Update countdown every second and refresh scores when countdown reaches 0
-    setInterval(updateCountdown, 1000);
+// Update countdown every second
+setInterval(updateCountdown, 1000);
 </script>
 
 </body>
