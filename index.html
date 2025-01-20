@@ -195,11 +195,9 @@ function updateCountdown() {
 
 async function loadScores() {
     try {
-        // Force bypass of all caches with cache-busting query param
         const timestamp = new Date().getTime();
-        const url = `https://gist.githubusercontent.com/jdotfite/07657b12f3715a7d4c183ce864d9e746/raw/scores.json?nocache=${timestamp}`;
-        
-        const response = await fetch(url, {
+        // Fetch from the same origin
+        const response = await fetch(`/scores.json?nocache=${timestamp}`, {
             method: 'GET',
             headers: {
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -214,13 +212,13 @@ async function loadScores() {
         }
         
         const data = await response.json();
-        console.log('Fetched new scores at:', new Date().toLocaleString(), data);  // Debug logging
+        console.log('Fetched new scores at:', new Date().toLocaleString(), data);
         
         // Update the display...
         const scoresDiv = document.getElementById('scores');
         // Rest of your display logic...
 
-    } catch (error) {
+} catch (error) {
         console.error('Error loading scores:', error);
         if (!document.getElementById('scores').innerHTML.includes('table')) {
             document.getElementById('scores').innerHTML = 'Error loading scores. Retrying...';
