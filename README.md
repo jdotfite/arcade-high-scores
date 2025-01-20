@@ -5,7 +5,7 @@ Automatically track and display high scores from multiple MAME arcade cabinets o
 
 Components:
 1. Java Programs:
-   - ArcadeSetup.java: Configuration utility for player names
+   - ArcadeSetup.java: A menu-driven configuration utility for managing player names, GitHub settings, game lists, and system parameters for the arcade high score tracking system.
    - ArcadeScoreManager.java: Main program that monitors and uploads scores
    - Dependencies: org.json-1.6-20240205.jar, hi2txt.jar
 
