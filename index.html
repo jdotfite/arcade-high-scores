@@ -195,72 +195,68 @@ async function loadScores() {
     try {
         const timestamp = new Date().getTime();
         let scores = [];
-        let gameConfig = null;
         
-        // First, load the game configuration
+        // Load all score files we can find
+        const scoreFilePattern = /-scores\.json$/;
+        
         try {
-            const configResponse = await fetch(`/arcade-high-scores/arcade_config.json?nocache=${timestamp}`);
-            if (configResponse.ok) {
-                const config = await configResponse.json();
-                gameConfig = config.games;
-                console.log('Loaded game configuration:', gameConfig);
-            } else {
-                throw new Error('Could not load game configuration');
-            }
-        } catch (e) {
-            console.error('Error loading game configuration:', e);
-            document.getElementById('scores').innerHTML = 'Error loading game configuration...';
-            return;
-        }
-
-        // Load all score files from the data directory
-        try {
-            const dataResponse = await fetch(`/arcade-high-scores/data-files.json?nocache=${timestamp}`);
-            if (dataResponse.ok) {
-                const files = await dataResponse.json();
-                // Load each score file
-                for (const file of files) {
-                    if (file.endsWith('-scores.json')) {
-                        const scoreResponse = await fetch(`/arcade-high-scores/${file}?nocache=${timestamp}`);
-                        if (scoreResponse.ok) {
-                            const scoreData = await scoreResponse.json();
-                            scores.push(scoreData);
-                            console.log(`Loaded scores from ${file}:`, scoreData);
+            const response = await fetch(`/arcade-high-scores/`);
+            if (response.ok) {
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.getElementsByTagName('a');
+                for (const link of links) {
+                    const href = link.getAttribute('href');
+                    if (href && scoreFilePattern.test(href)) {
+                        try {
+                            const scoreResponse = await fetch(`/arcade-high-scores/${href}?nocache=${timestamp}`);
+                            if (scoreResponse.ok) {
+                                const data = await scoreResponse.json();
+                                if (!scores.find(s => s.player === data.player)) {
+                                    scores.push(data);
+                                    console.log(`Loaded scores from ${href}:`, data);
+                                }
+                            }
+                        } catch (e) {
+                            console.log(`Error loading ${href}:`, e);
                         }
                     }
                 }
             }
         } catch (e) {
-            console.log('Could not load score files directory');
+            console.log('Could not load directory listing');
         }
 
-        // If no scores loaded, show waiting message
         if (scores.length === 0) {
             document.getElementById('scores').innerHTML = 'Waiting for first scores to be uploaded...';
             return;
         }
-        
+
         const scoresDiv = document.getElementById('scores');
         let html = '';
         
-        // Process each game from the configuration
-        for (const [gameId, gameData] of Object.entries(gameConfig)) {
-            const displayName = gameData.display_name;
-            
-            // Get scores for this game from all players
+        // Get unique game IDs from all score files
+        const gameIds = [...new Set(
+            scores.flatMap(scoreData => 
+                Object.keys(scoreData.arcade_scores || {})
+            )
+        )];
+
+        // Process each game found in the data
+        for (const gameId of gameIds) {
             const gameScores = scores.map(playerData => ({
                 name: playerData.player,
                 score: playerData.arcade_scores?.[gameId]?.high_scores?.[0]?.score || 0
-            })).sort((a, b) => b.score - a.score); // Sort by score descending
+            })).sort((a, b) => b.score - a.score);
 
-            // Ensure we always have at least two score entries
             while (gameScores.length < 2) {
                 gameScores.push({ name: '---', score: 0 });
             }
 
             html += `
                 <div class="game-section">
-                    <div class="game-title">${displayName}</div>
+                    <div class="game-title">${gameId.toUpperCase()}</div>
                     <table class="score-table">
                         <tr class="header-row">
                             <th>RANK</th>
@@ -282,7 +278,6 @@ async function loadScores() {
             `;
         }
         
-        // Add last updated time using the most recent update
         const lastUpdates = scores
             .map(s => s.last_updated)
             .filter(Boolean)
