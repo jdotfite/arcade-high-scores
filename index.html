@@ -7,7 +7,6 @@
     <meta http-equiv="Expires" content="0">
     <title>Arcade Hall of Fame</title>
     <style>
-        /* Your existing styles remain the same up to the countdown styles */
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
         body {
@@ -135,24 +134,23 @@
             fill: none;
         }
 
-.countdown-circle .progress {
-    stroke: #00FF00;
-    transition: stroke-dashoffset 1s linear;
-}
+        .countdown-circle .progress {
+            stroke: #00FF00;
+            transition: stroke-dashoffset 1s linear;
         }
 
         .countdown-circle .bg {
             stroke: #333;
         }
 
-@keyframes countdown {
-    from {
-        stroke-dashoffset: 0;
-    }
-    to {
-        stroke-dashoffset: 251.2;
-    }
-}
+        @keyframes countdown {
+            from {
+                stroke-dashoffset: 0;
+            }
+            to {
+                stroke-dashoffset: 251.2;
+            }
+        }
 
         .countdown-text {
             position: absolute;
@@ -171,65 +169,104 @@
                 <circle class="bg" cx="50" cy="50" r="40"/>
                 <circle class="progress" cx="50" cy="50" r="40"/>
             </svg>
-            <div class="countdown-text">5</div>
+            <div class="countdown-text">15</div>
         </div>
         <h1>ARCADE HALL OF FAME</h1>
         <div id="scores">Loading scores...</div>
     </div>
 
 <script>
-let countdownValue = 15; // Changed from 60
-let lastFetchTime = 0;
-const CACHE_DURATION = 15000; // Changed from 60000 to 15000 milliseconds
+    let countdownValue = 15;
+    let lastFetchTime = 0;
+    const CACHE_DURATION = 15000; // 15 seconds
 
-function updateCountdown() {
-    document.querySelector('.countdown-text').textContent = countdownValue;
-    document.querySelector('.countdown-circle .progress').style.strokeDashoffset = 
-        (251.2 * (15 - countdownValue) / 15);  // Changed from 60 to 15
-    countdownValue--;
-    if (countdownValue < 0) {
-        countdownValue = 15;  // Reset to 15 instead of 60
-        loadScores();
-    }
-}
-
-async function loadScores() {
-    try {
-        const timestamp = new Date().getTime();
-        // Fetch from the same origin
-        const response = await fetch(`/scores.json?nocache=${timestamp}`, {
-            method: 'GET',
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0'
-            },
-            cache: 'no-store'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Fetched new scores at:', new Date().toLocaleString(), data);
-        
-        // Update the display...
-        const scoresDiv = document.getElementById('scores');
-        // Rest of your display logic...
-
-} catch (error) {
-        console.error('Error loading scores:', error);
-        if (!document.getElementById('scores').innerHTML.includes('table')) {
-            document.getElementById('scores').innerHTML = 'Error loading scores. Retrying...';
+    function updateCountdown() {
+        document.querySelector('.countdown-text').textContent = countdownValue;
+        document.querySelector('.countdown-circle .progress').style.strokeDashoffset = 
+            (251.2 * (15 - countdownValue) / 15);
+        countdownValue--;
+        if (countdownValue < 0) {
+            countdownValue = 15;
+            loadScores();
         }
     }
-}
-// Initial load
-loadScores();
 
-// Update countdown every second
-setInterval(updateCountdown, 1000);
+    async function loadScores() {
+        try {
+            console.log('Fetching scores...');
+            const timestamp = new Date().getTime();
+            const response = await fetch(`/arcade-high-scores/scores.json?nocache=${timestamp}`, {
+                method: 'GET',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                },
+                cache: 'no-store'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Fetched new scores:', data);
+            
+            const scoresDiv = document.getElementById('scores');
+            
+            const gameNames = {
+                'mspacman': 'MS. PAC-MAN',
+                'mspacmnf': 'MS. PAC-MAN FAST',
+                'pacman': 'PAC-MAN'
+            };
+            
+            let html = '';
+            
+            for (const [game, scoreData] of Object.entries(data.arcade_scores)) {
+                const displayName = gameNames[game] || game.toUpperCase();
+                const topScore = scoreData.high_scores[0].score;
+                const playerName = data.player.toUpperCase();
+
+                html += `
+                    <div class="game-section">
+                        <div class="game-title">${displayName}</div>
+                        <table class="score-table">
+                            <tr class="header-row">
+                                <th>RANK</th>
+                                <th>SCORE</th>
+                                <th>NAME</th>
+                            </tr>
+                            <tr class="score-row">
+                                <td class="rank-1st">1ST</td>
+                                <td class="score-value">${topScore}</td>
+                                <td class="rank-1st">${playerName}</td>
+                            </tr>
+                            <tr class="score-row">
+                                <td class="rank-2nd">2ND</td>
+                                <td class="empty-score">---</td>
+                                <td class="rank-2nd">---</td>
+                            </tr>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            html += `<div class="last-updated">Last Updated: ${data.last_updated}</div>`;
+            scoresDiv.innerHTML = html;
+
+        } catch (error) {
+            console.error('Error loading scores:', error);
+            if (!document.getElementById('scores').innerHTML.includes('table')) {
+                document.getElementById('scores').innerHTML = 'Error loading scores. Retrying...';
+            }
+        }
+    }
+
+    // Initial load
+    loadScores();
+
+    // Update countdown every second
+    setInterval(updateCountdown, 1000);
 </script>
 
 </body>
