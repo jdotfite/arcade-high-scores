@@ -191,76 +191,87 @@
         }
     }
 
-    async function loadScores() {
-        try {
-            console.log('Fetching scores...');
-            const timestamp = new Date().getTime();
-            const response = await fetch(`/arcade-high-scores/scores.json?nocache=${timestamp}`, {
+ async function loadScores() {
+    try {
+        const timestamp = new Date().getTime();
+        
+        // Fetch both score files
+        const [thomResponse, justinResponse] = await Promise.all([
+            fetch(`/arcade-high-scores/thom-scores.json?nocache=${timestamp}`, {
                 method: 'GET',
-                headers: {
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0'
-                },
-                cache: 'no-store'
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('Fetched new scores:', data);
-            
-            const scoresDiv = document.getElementById('scores');
-            
-            const gameNames = {
-                'mspacman': 'MS. PAC-MAN',
-                'mspacmnf': 'MS. PAC-MAN FAST',
-                'pacman': 'PAC-MAN'
-            };
-            
-            let html = '';
-            
-            for (const [game, scoreData] of Object.entries(data.arcade_scores)) {
-                const displayName = gameNames[game] || game.toUpperCase();
-                const topScore = scoreData.high_scores[0].score;
-                const playerName = data.player.toUpperCase();
+                headers: { 'Cache-Control': 'no-cache' }
+            }),
+            fetch(`/arcade-high-scores/justin-scores.json?nocache=${timestamp}`, {
+                method: 'GET',
+                headers: { 'Cache-Control': 'no-cache' }
+            })
+        ]);
 
-                html += `
-                    <div class="game-section">
-                        <div class="game-title">${displayName}</div>
-                        <table class="score-table">
-                            <tr class="header-row">
-                                <th>RANK</th>
-                                <th>SCORE</th>
-                                <th>NAME</th>
-                            </tr>
-                            <tr class="score-row">
-                                <td class="rank-1st">1ST</td>
-                                <td class="score-value">${topScore}</td>
-                                <td class="rank-1st">${playerName}</td>
-                            </tr>
-                            <tr class="score-row">
-                                <td class="rank-2nd">2ND</td>
-                                <td class="empty-score">---</td>
-                                <td class="rank-2nd">---</td>
-                            </tr>
-                        </table>
-                    </div>
-                `;
-            }
+        const thomData = await thomResponse.json();
+        const justinData = await justinResponse.json();
+        
+        const scoresDiv = document.getElementById('scores');
+        const gameNames = {
+            'mspacman': 'MS. PAC-MAN',
+            'mspacmnf': 'MS. PAC-MAN FAST',
+            'pacman': 'PAC-MAN'
+        };
+        
+        let html = '';
+        
+        // Combine and sort scores for each game
+        for (const game of Object.keys(gameNames)) {
+            const displayName = gameNames[game];
             
-            html += `<div class="last-updated">Last Updated: ${data.last_updated}</div>`;
-            scoresDiv.innerHTML = html;
+            // Get scores for this game
+            const thomScore = thomData.arcade_scores[game]?.high_scores[0]?.score || 0;
+            const justinScore = justinData.arcade_scores[game]?.high_scores[0]?.score || 0;
+            
+            // Create sorted array of scores
+            const scores = [
+                { name: thomData.player, score: thomScore },
+                { name: justinData.player, score: justinScore }
+            ].sort((a, b) => b.score - a.score); // Sort by score descending
 
-        } catch (error) {
-            console.error('Error loading scores:', error);
-            if (!document.getElementById('scores').innerHTML.includes('table')) {
-                document.getElementById('scores').innerHTML = 'Error loading scores. Retrying...';
-            }
+            html += `
+                <div class="game-section">
+                    <div class="game-title">${displayName}</div>
+                    <table class="score-table">
+                        <tr class="header-row">
+                            <th>RANK</th>
+                            <th>SCORE</th>
+                            <th>NAME</th>
+                        </tr>
+                        <tr class="score-row">
+                            <td class="rank-1st">1ST</td>
+                            <td class="score-value">${scores[0].score}</td>
+                            <td class="rank-1st">${scores[0].name}</td>
+                        </tr>
+                        <tr class="score-row">
+                            <td class="rank-2nd">2ND</td>
+                            <td class="score-value">${scores[1].score}</td>
+                            <td class="rank-2nd">${scores[1].name}</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+        }
+        
+        // Add last updated time using the most recent update
+        const thomDate = new Date(thomData.last_updated);
+        const justinDate = new Date(justinData.last_updated);
+        const lastUpdate = new Date(Math.max(thomDate, justinDate));
+        
+        html += `<div class="last-updated">Last Updated: ${lastUpdate.toString()}</div>`;
+        scoresDiv.innerHTML = html;
+
+    } catch (error) {
+        console.error('Error loading scores:', error);
+        if (!document.getElementById('scores').innerHTML.includes('table')) {
+            document.getElementById('scores').innerHTML = 'Error loading scores. Retrying...';
         }
     }
+}
 
     // Initial load
     loadScores();
