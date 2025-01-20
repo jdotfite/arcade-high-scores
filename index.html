@@ -145,14 +145,14 @@
             stroke: #333;
         }
 
-        @keyframes countdown {
-            from {
-                stroke-dashoffset: 0;
-            }
-            to {
-                stroke-dashoffset: 251.2;
-            }
-        }
+@keyframes countdown {
+    from {
+        stroke-dashoffset: 0;
+    }
+    to {
+        stroke-dashoffset: 251.2;
+    }
+}
 
         .countdown-text {
             position: absolute;
@@ -178,15 +178,17 @@
     </div>
 
 <script>
-let countdownValue = 15;
+let countdownValue = 15; // Changed from 60
+let lastFetchTime = 0;
+const CACHE_DURATION = 15000; // Changed from 60000 to 15000 milliseconds
 
 function updateCountdown() {
     document.querySelector('.countdown-text').textContent = countdownValue;
     document.querySelector('.countdown-circle .progress').style.strokeDashoffset = 
-        (251.2 * (15 - countdownValue) / 15); 
+        (251.2 * (15 - countdownValue) / 15);  // Changed from 60 to 15
     countdownValue--;
     if (countdownValue < 0) {
-        countdownValue = 60;
+        countdownValue = 15;  // Reset to 15 instead of 60
         loadScores();
     }
 }
