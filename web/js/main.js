@@ -15,8 +15,9 @@ async function loadScores() {
     try {
         const timestamp = new Date().getTime();
         
-        // Update the fetch URL to reflect the new directory structure
-        const response = await fetch(`../scores.json?nocache=${timestamp}`);
+        // Update this line to fetch from the correct location
+        const response = await fetch(`scores.json?nocache=${timestamp}`);
+        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
