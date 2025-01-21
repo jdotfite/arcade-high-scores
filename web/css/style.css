@@ -45,7 +45,9 @@
             margin-bottom: 30px;
             letter-spacing: 2px;
         }
-
+        .scores {
+                text-align:center;
+        }
         .game-section {
             margin-bottom: 15px;
         }
