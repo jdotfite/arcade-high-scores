@@ -1,0 +1,14 @@
+[Unit]
+Description=Arcade High Score Manager
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/home/pi/arcade-scores/start_arcade.sh
+WorkingDirectory=/home/pi/arcade-scores
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
