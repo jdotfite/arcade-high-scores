@@ -1,0 +1,34 @@
+Current directory: /home/pi/arcade-scores
+Java version:
+openjdk version "11.0.23" 2024-04-16
+OpenJDK Runtime Environment (build 11.0.23+9-post-Raspbian-1deb10u1)
+OpenJDK Server VM (build 11.0.23+9-post-Raspbian-1deb10u1, mixed mode)
+Listing directory contents:
+total 1580
+-rw-r--r-- 1 pi pi     261 Jan 21 16:30 arcade.log
+-rw-r--r-- 1 pi pi   15558 Jan 21 16:29 ArcadeScoreManager.class
+-rw-r--r-- 1 pi pi   18770 Jan 21 16:29 ArcadeScoreManager.java
+-rw-r--r-- 1 pi pi  481244 Jan 21 13:03 hi2txt.jar
+-rw-r--r-- 1 pi pi 1018160 Jan 21 13:03 hi2txt.zip
+-rw-r--r-- 1 pi pi   64685 Jan 21 13:03 org.json-1.6-20240205.jar
+-rw-r--r-- 1 pi pi    2674 Jan 21 16:21 settings.json
+-rwxr-xr-x 1 pi pi     345 Jan 21 16:27 start_arcade.sh
+Running ArcadeScoreManager:
+ArcadeScoreManager started.
+Loaded configuration for player: Justin
+Watching for changes in: /home/pi/RetroPie/roms/arcade/fbneo
+Using hi2txt jar: hi2txt.jar
+Monitoring games: turtles, galaxian, mrdo, mystston, triplep, docastle, mspacmnf, ladybug, pacplus, jjack, amidar, anteater, bagman, theend, astrob, zzyzzyxx, rocnrope, pengo, pacnpal, dkongjr, armorcar, bnj, mspacman, frogger, qix, circusc, galaga, digdug, carnival, sbagman, pacman, dkong3, panic, dkong, phoenix, btime, superpac, 005, jrpacman, invaders, pooyan, pacmania
+Initialization complete. Starting file watch...
+Change detected in: galaxian.hi - waiting 45 seconds for changes to settle...
+No changes detected for 45 seconds, processing files...
+Processing file: /home/pi/RetroPie/roms/arcade/fbneo/galaxian.hi
+hi2txt output: RANK|SCORE
+hi2txt output: 1|880
+Parsing score line: 1|880
+Split parts: [1, 880]
+New high score for galaxian! 880 > 0
+Uploading to GitHub Pages at: https://api.github.com/repos/jdotfite/arcade-high-scores/contents/scores.json
+Found existing file, including SHA for update
+Successfully uploaded to GitHub Pages!
+Successfully updated backup Gist!
