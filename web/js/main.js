@@ -15,8 +15,8 @@ async function loadScores() {
     try {
         const timestamp = new Date().getTime();
         
-        // Fetch the combined scores file
-        const response = await fetch(`/arcade-high-scores/scores.json?nocache=${timestamp}`);
+        // Update the fetch URL to reflect the new directory structure
+        const response = await fetch(`../scores.json?nocache=${timestamp}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -45,6 +45,7 @@ async function loadScores() {
             'mspacman': 'MS. PAC-MAN',
             'mspacmnf': 'MS. PAC-MAN SPEEDUP',
             'pacman': 'PAC-MAN'
+            // Add more game display names as needed
         };
 
         // Process each game
