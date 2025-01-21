@@ -1,35 +1,75 @@
 MAME High Score Web Display From Multiple Cabinets and Locations
 
-Purpose:
-Automatically track and display high scores from multiple MAME arcade cabinets on a web page.
+# Arcade High Score Tracker
+Automatically track and upload high scores from arcade games running on a Raspberry Pi with RetroPie.
 
-Components:
-1. Java Programs:
-   - ArcadeSetup.java: A menu-driven configuration utility for managing player names, GitHub settings, game lists, and system parameters for the arcade high score tracking system.
-   - ArcadeScoreManager.java: Main program that monitors and uploads scores
-   - Dependencies: org.json-1.6-20240205.jar, hi2txt.jar
+## Features
+- Monitors high score files for supported arcade games
+- Automatically uploads new high scores to a GitHub repository
+- Supports multiple players
+- Easy to configure and set up
+- Web interface for displaying scores
 
-2. Score Files:
-   - thom-scores.json and justin-scores.json
-   - Stored on GitHub Pages repository: jdotfite/arcade-high-scores
-   - Also backed up to GitHub Gist
+## Prerequisites
+- Raspberry Pi running RetroPie
+- Internet connection
+- GitHub account
 
-3. Web Display:
-   - Hosted on GitHub Pages: https://jdotfite.github.io/arcade-high-scores/
-   - Auto-refreshes every 15 seconds
-   - Shows ranked scores for both players
-   - Tracks three games: MS. PAC-MAN, MS. PAC-MAN FAST, PAC-MAN
+## Quick Installation
+1. Clone this repository:
 
-Technical Details:
-- Uses Java WatchService to monitor .hi files
-- 30-second debounce on file changes
-- GitHub API for file updates
-- Configurable per-player setup
+git clone https://github.com/yourusername/arcade-high-scores.git
+cd arcade-high-scores/dist
 
-Current Status:
-System is operational with separate score tracking for each cabinet and combined display on the webpage.
+2. Run the installation script:
+./install.sh
 
-Required Setup:
-- GitHub token with gist and repo permissions
-- Java environment with required JARs
-- MAME cabinet with .hi files in ../hiscore directory
+3. Edit the settings file with your GitHub details:
+nano /home/pi/arcade-high-scores/settings.json
+
+4. Restart the service:
+sudo systemctl restart arcade-scores
+
+
+## Manual Installation
+1. Ensure Java is installed:
+sudo apt update
+sudo apt install default-jdk
+
+
+2. Copy files to the installation directory:
+sudo mkdir -p /home/pi/arcade-high-scores
+sudo cp -R * /home/pi/arcade-high-scores/
+
+3. Copy the service file:
+sudo cp arcade-scores.service /etc/systemd/system/
+
+4. Make the start script executable:
+chmod +x /home/pi/arcade-high-scores/start_arcade.sh
+
+5. Enable and start the service:
+sudo systemctl daemon-reload
+sudo systemctl enable arcade-scores
+sudo systemctl start arcade-scores
+
+## Configuration
+Edit `/home/pi/arcade-high-scores/settings.json` to configure:
+- GitHub token, repository details, and Gist ID
+- `hi_score_dir` path (default: "/home/pi/RetroPie/roms/arcade/fbneo")
+- Monitored games
+
+Restart the service after changes:
+sudo systemctl restart arcade-scores
+
+
+## Web Interface
+To view the high scores:
+1. Open a web browser
+2. Navigate to `https://username.github.io/web/arcade-high-scores/`
+
+## Troubleshooting
+- Check service status: 
+sudo systemctl status arcade-scores
+
+- View logs: 
+cat /home/pi/arcade-high-scores/arcade.log
