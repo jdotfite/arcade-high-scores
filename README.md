@@ -1,4 +1,4 @@
-MAME High Score Web Display Project
+MAME High Score Web Display From Multiple Cabinets and Locations
 
 Purpose:
 Automatically track and display high scores from multiple MAME arcade cabinets on a web page.
